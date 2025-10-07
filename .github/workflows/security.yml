@@ -1,4 +1,4 @@
-name: Security Analysis - OWASP Dependency Check
+name: Security Analysis (SCA + SAST + Secrets)
 
 on:
   push:
@@ -6,13 +6,19 @@ on:
   pull_request:
 
 jobs:
-  dependency-check:
+  security:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      # 1️⃣ Récupération du code source
+      - name: Checkout repository
         uses: actions/checkout@v4
 
+      # 2️⃣ Création du dossier pour les rapports
+      - name: Create reports directory
+        run: mkdir -p reports/dependency-check reports/semgrep reports/trufflehog
+
+      # 3️⃣ Analyse SCA (OWASP Dependency Check)
       - name: Run OWASP Dependency Check
         uses: dependency-check/Dependency-Check_Action@main
         with:
@@ -27,30 +33,35 @@ jobs:
           name: sca-report
           path: reports/dependency-check/dependency-check-report.json
 
-name: Security Analysis - Semgrep (SAST)
-
-on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-
-jobs:
-  semgrep:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Run Semgrep scan
+      # 4️⃣ Analyse SAST (Semgrep)
+      - name: Run Semgrep (SAST)
         uses: returntocorp/semgrep-action@v1
         with:
-          config: "auto"               # analyse automatique selon le langage
-          output: "reports/semgrep-report.sarif"
+          config: "auto"                        # Auto-détection du langage
+          output: "reports/semgrep/semgrep-report.sarif"
           output-format: "sarif"
 
       - name: Upload SAST report
         uses: actions/upload-artifact@v4
         with:
           name: sast-report
-          path: reports/semgrep-report.sarif
+          path: reports/semgrep/semgrep-report.sarif
+
+      - name: Upload Semgrep results to GitHub Code Scanning
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: reports/semgrep/semgrep-report.sarif
+
+      # 5️⃣ Analyse de secrets (TruffleHog)
+      - name: Run TruffleHog (Secrets Scan)
+        uses: trufflesecurity/trufflehog@v3
+        with:
+          path: "."
+          json: true
+          output: "reports/trufflehog/trufflehog-report.json"
+
+      - name: Upload Secrets report
+        uses: actions/upload-artifact@v4
+        with:
+          name: secrets-report
+          path: reports/trufflehog/trufflehog-report.json
