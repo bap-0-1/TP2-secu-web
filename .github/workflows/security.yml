@@ -38,7 +38,6 @@ jobs:
         uses: returntocorp/semgrep-action@v1
         with:
           config: "auto"                        # Auto-détection du langage
-          continue-on-error: true   # <— évite que le job s’arrête à cause des findings
 
       # Export manuel du rapport SARIF
       - name: Generate Semgrep SARIF report
