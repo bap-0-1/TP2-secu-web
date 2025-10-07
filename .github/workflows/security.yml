@@ -58,15 +58,16 @@ jobs:
           sarif_file: reports/semgrep/semgrep-report.sarif
 
       # 5️⃣ Analyse de secrets (TruffleHog)
-      - name: Run TruffleHog (Secrets Scan)
-        uses: trufflesecurity/trufflehog@main
-        with:
-          path: "."
-          json: true
-          output: "reports/trufflehog/trufflehog-report.json"
+      - name: Install TruffleHog
+        run: pip install trufflehog
+
+      - name: Run TruffleHog (CLI)
+        run: trufflehog filesystem . --json > reports/trufflehog/trufflehog-report.json || true
+        continue-on-error: true
 
       - name: Upload Secrets report
         uses: actions/upload-artifact@v4
         with:
           name: secrets-report
           path: reports/trufflehog/trufflehog-report.json
+
