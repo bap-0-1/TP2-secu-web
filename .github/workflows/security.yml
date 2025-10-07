@@ -8,6 +8,10 @@ on:
 jobs:
   security:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+
 
     steps:
       # 1️⃣ Récupération du code source
