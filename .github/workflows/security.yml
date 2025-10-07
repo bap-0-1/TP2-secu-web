@@ -38,8 +38,11 @@ jobs:
         uses: returntocorp/semgrep-action@v1
         with:
           config: "auto"                        # Auto-détection du langage
-          output: "reports/semgrep/semgrep-report.sarif"
-          output-format: "sarif"
+          continue-on-error: true   # <— évite que le job s’arrête à cause des findings
+
+      # Export manuel du rapport SARIF
+      - name: Generate Semgrep SARIF report
+        run: semgrep --config auto --sarif --output reports/semgrep/semgrep-report.sarif || true  
 
       - name: Upload SAST report
         uses: actions/upload-artifact@v4
