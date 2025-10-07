@@ -26,3 +26,31 @@ jobs:
         with:
           name: sca-report
           path: reports/dependency-check/dependency-check-report.json
+
+name: Security Analysis - Semgrep (SAST)
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+
+jobs:
+  semgrep:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run Semgrep scan
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: "auto"               # analyse automatique selon le langage
+          output: "reports/semgrep-report.sarif"
+          output-format: "sarif"
+
+      - name: Upload SAST report
+        uses: actions/upload-artifact@v4
+        with:
+          name: sast-report
+          path: reports/semgrep-report.sarif
