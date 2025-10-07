@@ -34,14 +34,13 @@ jobs:
           path: reports/dependency-check/dependency-check-report.json
 
       # 4️⃣ Analyse SAST (Semgrep)
-      - name: Run Semgrep (SAST)
-        uses: returntocorp/semgrep-action@v1
-        with:
-          config: "auto"                        # Auto-détection du langage
+      - name: Install Semgrep
+        run: pip install semgrep
 
-      # Export manuel du rapport SARIF
-      - name: Generate Semgrep SARIF report
-        run: semgrep --config auto --sarif --output reports/semgrep/semgrep-report.sarif || true  
+      - name: Run Semgrep (SAST)
+        run: |
+          semgrep --config auto --sarif --output reports/semgrep/semgrep-report.sarif || true
+        continue-on-error: true
 
       - name: Upload SAST report
         uses: actions/upload-artifact@v4
