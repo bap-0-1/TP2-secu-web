@@ -68,11 +68,11 @@ jobs:
 
       - name: Run server in local
         run: git clone https://github.com/bap-0-1/TP2-secu-web.git; cd TP2-secu-web; pip install -r requirements.txt; ./db_init.py; python3 vulpy.py &
-      - name: Run ZAP baseline
-        run: |
-          docker run --rm owasp/zap2docker-stable zap-baseline.py -t http://localhost:5000 -J zap_report.json
-      - name: Upload report
-        uses: actions/upload-artifact@v4
+      
+      - name: Lancer OWASP ZAP Baseline Scan
+        uses: zaproxy/action-baseline@v0.14.0
         with:
-          name: zap_report
-          path: zap_report.json
+          target: "http://localhost:5000"
+          cmd_options: "-a -d"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
