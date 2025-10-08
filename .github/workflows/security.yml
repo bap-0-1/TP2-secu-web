@@ -67,7 +67,7 @@ jobs:
           path: reports/trufflehog/trufflehog-report.json
 
       - name: Run server in local
-        run: git clone https://github.com/bap-0-1/TP2-secu-web.git; cd TP2-secu-web; pip install -r requirements.txt; ./db_init.py; python3 vulpy.py
+        run: git clone https://github.com/bap-0-1/TP2-secu-web.git; cd TP2-secu-web; pip install -r requirements.txt; ./db_init.py; python3 vulpy.py &
       - name: Run ZAP baseline
         run: |
           docker run --rm owasp/zap2docker-stable zap-baseline.py -t http://localhost:5000 -J zap_report.json
