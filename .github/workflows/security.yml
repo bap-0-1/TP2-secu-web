@@ -72,7 +72,7 @@ jobs:
       - name: Lancer OWASP ZAP Baseline Scan
         uses: zaproxy/action-baseline@v0.14.0
         with:
-          target: "http://localhost:5000"
+          target: "http://127.0.1.1:5000"
           cmd_options: "-a -d"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
