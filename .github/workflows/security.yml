@@ -62,7 +62,7 @@ jobs:
         run: pip install trufflehog
 
       - name: Run TruffleHog (CLI)
-        run: trufflehog https://github.com/bap-0-1/TP2-secu-web.git --json reports/trufflehog/trufflehog-report.json
+        run: trufflehog . --json > reports/trufflehog/trufflehog-report.json
         continue-on-error: true
 
       - name: Upload Secrets report
