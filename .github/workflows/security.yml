@@ -4,7 +4,6 @@ on:
   push:
     branches: [ "main" ]
   pull_request:
-    branches: [ "main" ]
 
 jobs:
   security:
@@ -15,15 +14,12 @@ jobs:
 
 
     steps:
-      # 1️⃣ Récupération du code source
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2️⃣ Création du dossier pour les rapports
       - name: Create reports directory
         run: mkdir -p reports/dependency-check reports/semgrep reports/trufflehog
 
-      # 3️⃣ Analyse SCA (OWASP Dependency Check)
       - name: Run OWASP Dependency Check
         uses: dependency-check/Dependency-Check_Action@main
         with:
@@ -38,7 +34,6 @@ jobs:
           name: sca-report
           path: reports/dependency-check/dependency-check-report.json
 
-      # 4️⃣ Analyse SAST (Semgrep)
       - name: Install Semgrep
         run: pip install semgrep
 
@@ -58,7 +53,6 @@ jobs:
         with:
           sarif_file: reports/semgrep/semgrep-report.sarif
 
-      # 5️⃣ Analyse de secrets (TruffleHog)
       - name: Install TruffleHog
         run: pip install trufflehog
 
@@ -72,3 +66,13 @@ jobs:
           name: secrets-report
           path: reports/trufflehog/trufflehog-report.json
 
+      - name: Run server in local
+        run: git clone https://github.com/bap-0-1/TP2-secu-web.git; cd TP2-secu-web; pip install -r requirements.txt; ./db_init.py; python3 vulpy.py
+      - name: Run ZAP baseline
+        run: |
+          docker run --rm owasp/zap2docker-stable zap-baseline.py -t http://localhost:5000 -J zap_report.json
+      - name: Upload report
+        uses: actions/upload-artifact@v4
+        with:
+          name: zap_report
+          path: zap_report.json
