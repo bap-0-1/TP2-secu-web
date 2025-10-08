@@ -62,7 +62,7 @@ jobs:
         run: pip install trufflehog
 
       - name: Run TruffleHog (CLI)
-        run: trufflehog filesystem . --json > reports/trufflehog/trufflehog-report.json || true
+        run: trufflehog filesystem --json > reports/trufflehog/trufflehog-report.json || true
         continue-on-error: true
 
       - name: Upload Secrets report
